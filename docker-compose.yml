@@ -1,6 +1,6 @@
 services:
   bot:
-    image: ghcr.io/ulisesvar/asistencia:${IMAGE_TAG:-latest}
+    image: ghcr.io/ulisesvar/asistencias:${IMAGE_TAG:-latest}
     restart: unless-stopped
     env_file:
       - .env

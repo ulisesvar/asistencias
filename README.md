@@ -95,7 +95,7 @@ IMAGE_TAG=1.2.0 docker compose up -d
 ## Publicación de la imagen (CI/CD)
 
 [`.github/workflows/docker-publish.yml`](.github/workflows/docker-publish.yml) construye
-y publica automáticamente la imagen en `ghcr.io/ulisesvar/asistencia`:
+y publica automáticamente la imagen en `ghcr.io/ulisesvar/asistencias`:
 
 - En cada push a `main`: publica el tag `latest` (además de un tag `sha-<commit corto>`
   para trazabilidad).
