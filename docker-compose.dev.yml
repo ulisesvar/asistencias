@@ -1,0 +1,6 @@
+services:
+  bot:
+    image: asistencia:dev
+    build:
+      context: .
+      dockerfile: Dockerfile
