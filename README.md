@@ -7,7 +7,7 @@ los alumnos registrados que envíen su ubicación; si están dentro de un radio 
 
 ## Cómo funciona
 
-1. El alumno le escribe `/start` al bot y registra su número de cuenta.
+1. El alumno le escribe `/start` al bot y registra su número de c   uenta.
 2. El profesor (uno de los IDs listados en `TEACHER_IDS`) ejecuta `/pase [minutos]` en un
    chat privado con el bot. Esto abre una sesión de asistencia y notifica por mensaje
    directo a todos los alumnos registrados.
@@ -17,6 +17,10 @@ los alumnos registrados que envíen su ubicación; si están dentro de un radio 
    asistencia. Un alumno solo puede registrar una asistencia por sesión.
 5. El profesor puede consultar `/estado` para ver cuántos han asistido, y `/cerrar` para
    cerrar el pase de lista antes de que expire el tiempo.
+6. Ante un reclamo ("mi ubicación salió mal", "no me dejó pasar asistencia"), el profesor
+   puede usar `/historial [numero de cuenta]` para ver los últimos intentos de ese alumno
+   (éxitos y fallos), con fecha, resultado, coordenadas, distancia al salón y precisión GPS
+   reportada por Telegram.
 
 El bot opera por **long polling**: se conecta hacia afuera a la API de Telegram y no
 necesita ningún puerto expuesto ni HTTPS/reverse proxy.
@@ -115,7 +119,23 @@ contenedor de PostgreSQL, vía `/docker-entrypoint-initdb.d`. Tablas:
 
 - `students`: alumnos registrados (cuenta, usuario y ID de Telegram).
 - `attendance_sessions`: cada pase de lista abierto por un profesor.
-- `attendances`: asistencias registradas, con distancia calculada al salón.
+- `attendances`: asistencias exitosas, con distancia calculada al salón.
+- `attendance_attempts`: **todo** intento de envío de ubicación, exitoso o no (no
+  registrado, sin pase abierto, pase ya cerrado, ya había asistido, fuera de rango),
+  con coordenadas, distancia y precisión GPS reportada. Sirve como bitácora para resolver
+  reclamos de alumnos sobre su ubicación. Consultable con `/historial [numero de cuenta]`.
+
+Si ya tienes un despliegue existente (la base de datos ya fue inicializada antes), el
+esquema en `db/schema.sql` **no** se vuelve a aplicar automáticamente — `docker-entrypoint-
+initdb.d` solo corre en un volumen `pgdata` nuevo. Para agregar la tabla nueva a una base
+ya existente, aplica manualmente el bloque de `attendance_attempts` de `db/schema.sql`,
+por ejemplo:
+
+```bash
+docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" < db/schema.sql
+```
+
+(es seguro reejecutar todo el archivo: todas las sentencias usan `IF NOT EXISTS`).
 
 ## Seguridad
 
