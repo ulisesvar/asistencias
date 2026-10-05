@@ -117,6 +117,42 @@ contenedor de PostgreSQL, vía `/docker-entrypoint-initdb.d`. Tablas:
 - `attendance_sessions`: cada pase de lista abierto por un profesor.
 - `attendances`: asistencias registradas, con distancia calculada al salón.
 
+## Consulta de calificaciones (`/calif`)
+
+Cualquier alumno registrado puede escribir `/calif` (sin argumentos) en un chat privado con el
+bot y recibe su **calificación actual** (no necesariamente la final): el promedio, peso y
+aportación de cada categoría y el detalle por actividad (`Tarea 1`, `Examen 1`, `A/P`; una
+actividad sin evaluar aparece como `Pendiente`, un cero real como `0 / 100`).
+
+- El bot **no calcula** calificaciones: pide el resultado a la plataforma académica
+  (`GET /bot/evaluation/{numero_de_cuenta}`) y solo lo presenta.
+- La cuenta se toma **únicamente** del registro del alumno (`students.telegram_id` →
+  `students.account_number`); cualquier texto después de `/calif` se ignora, así que un alumno
+  no puede consultar a otro. Un alumno no registrado recibe un aviso y no se llama a la plataforma.
+- Solo funciona en chat privado (en grupos el bot pide usar el privado).
+- Solo lectura: no hay migraciones ni cambios en la base de datos del bot.
+
+Variables de entorno (en `.env`, junto a las demás):
+
+| Variable | Descripción |
+|---|---|
+| `ACADEMIC_API_BASE_URL` | URL base de la plataforma académica, p. ej. `https://api.canumpe.com` |
+| `ACADEMIC_API_KEY` | Llave de servidor con rol `bot` (restringida a un curso). **Nunca** al repositorio ni a los logs. |
+| `ACADEMIC_API_TIMEOUT_SECONDS` | Opcional, por defecto `10` |
+
+Si falta alguna de las dos primeras, `/calif` responde que la consulta no está disponible y
+el resto del bot (asistencia) funciona normalmente.
+
+## Pruebas
+
+```bash
+pip install -r requirements.txt -r requirements-dev.txt
+pytest
+```
+
+Las pruebas no llaman a ningún servicio real ni a la base de datos (la plataforma académica se
+simula con `httpx.MockTransport`).
+
 ## Seguridad
 
 - Ningún token, contraseña ni `.env` está incluido en el repositorio ni en la imagen

@@ -32,6 +32,12 @@ SESSION_DEFAULT_MINUTES = _int("SESSION_DEFAULT_MINUTES", 10)
 
 DATABASE_URL = _required("DATABASE_URL")
 
+# Consulta de calificaciones (/calif). Opcionales: si faltan, /calif responde que no esta
+# disponible y el resto del bot (asistencia) funciona igual.
+ACADEMIC_API_BASE_URL = os.environ.get("ACADEMIC_API_BASE_URL", "").strip()
+ACADEMIC_API_KEY = os.environ.get("ACADEMIC_API_KEY", "").strip()
+ACADEMIC_API_TIMEOUT_SECONDS = float(os.environ.get("ACADEMIC_API_TIMEOUT_SECONDS", "10"))
+
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 
 HEARTBEAT_FILE = os.environ.get("HEARTBEAT_FILE", "/tmp/bot_heartbeat")

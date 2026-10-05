@@ -11,7 +11,7 @@ from telegram.ext import (
 )
 
 from . import config, db
-from .handlers import admin, attendance, registration
+from .handlers import admin, attendance, grades, registration
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
@@ -56,6 +56,7 @@ def build_application() -> Application:
     application.add_handler(CommandHandler("pase", admin.open_attendance))
     application.add_handler(CommandHandler("cerrar", admin.close_attendance))
     application.add_handler(CommandHandler("estado", admin.status))
+    application.add_handler(CommandHandler("calif", grades.grades))
     application.add_handler(MessageHandler(filters.LOCATION, attendance.receive_location))
 
     application.job_queue.run_repeating(
