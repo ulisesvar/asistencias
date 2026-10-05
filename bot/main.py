@@ -56,7 +56,6 @@ def build_application() -> Application:
     application.add_handler(CommandHandler("pase", admin.open_attendance))
     application.add_handler(CommandHandler("cerrar", admin.close_attendance))
     application.add_handler(CommandHandler("estado", admin.status))
-    application.add_handler(CommandHandler("historial", admin.attempt_history))
     application.add_handler(MessageHandler(filters.LOCATION, attendance.receive_location))
 
     application.job_queue.run_repeating(
