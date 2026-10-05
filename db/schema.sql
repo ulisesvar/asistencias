@@ -27,27 +27,3 @@ CREATE TABLE IF NOT EXISTS attendances (
 );
 
 CREATE INDEX IF NOT EXISTS idx_attendances_session ON attendances(session_id);
-
-CREATE TABLE IF NOT EXISTS attendance_attempts (
-    id                  SERIAL PRIMARY KEY,
-    telegram_id         BIGINT NOT NULL,
-    student_id          INTEGER REFERENCES students(id),
-    session_id          INTEGER REFERENCES attendance_sessions(id),
-    result              TEXT NOT NULL CHECK (result IN (
-                            'SUCCESS',
-                            'NOT_REGISTERED',
-                            'NO_OPEN_SESSION',
-                            'SESSION_EXPIRED',
-                            'ALREADY_ATTENDED',
-                            'OUT_OF_RANGE'
-                        )),
-    latitude            DOUBLE PRECISION,
-    longitude           DOUBLE PRECISION,
-    horizontal_accuracy DOUBLE PRECISION,
-    distance_meters     DOUBLE PRECISION,
-    created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE INDEX IF NOT EXISTS idx_attendance_attempts_student ON attendance_attempts(student_id);
-CREATE INDEX IF NOT EXISTS idx_attendance_attempts_session ON attendance_attempts(session_id);
-CREATE INDEX IF NOT EXISTS idx_attendance_attempts_created_at ON attendance_attempts(created_at);
